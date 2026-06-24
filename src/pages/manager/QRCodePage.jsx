@@ -6,7 +6,9 @@ import QRCode from 'qrcode';
 export default function QRCodePage() {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [baseUrl] = useState(window.location.origin);
+  // const [baseUrl] = useState(window.location.origin);
+  const [baseUrl] = useState('https://frabjous-meerkat-4870c4.netlify.app');
+  
   const canvasRefs = useRef({});
 
   useEffect(() => {
