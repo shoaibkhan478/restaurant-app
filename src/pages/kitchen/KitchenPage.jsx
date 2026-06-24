@@ -12,28 +12,19 @@ export default function KitchenPage() {
   }, []);
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('orders')
-      .select(`
-        id, status, created_at, total_amount,
-        tables (table_number),
-        order_items (
-          id, quantity, notes, item_price,
-          menu_items (name)
-        )
-      `)
+      .select(`id, status, created_at, total_amount, tables(table_number), order_items(id, quantity, menu_items(name))`)
       .in('status', ['received', 'preparing'])
       .order('created_at', { ascending: true });
-
-    if (!error) setOrders(data || []);
+    setOrders(data || []);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchOrders();
-    const channel = supabase
-      .channel('kitchen-orders')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchOrders())
+    const channel = supabase.channel('kitchen')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
       .subscribe();
     return () => supabase.removeChannel(channel);
   }, []);
@@ -43,92 +34,97 @@ export default function KitchenPage() {
     fetchOrders();
   };
 
-  const getTimerColor = (createdAt) => {
-    const mins = Math.floor((new Date() - new Date(createdAt)) / 60000);
-    if (mins < 10) return 'text-green-400 bg-green-900/30';
-    if (mins < 20) return 'text-amber-400 bg-amber-900/30';
-    return 'text-red-400 bg-red-900/30 animate-pulse';
-  };
-
   const getElapsed = (createdAt) => {
     const total = Math.floor((new Date() - new Date(createdAt)) / 1000);
     return `${Math.floor(total / 60)}m ${total % 60}s`;
   };
 
+  const getTimerStyle = (createdAt) => {
+    const mins = Math.floor((new Date() - new Date(createdAt)) / 60000);
+    if (mins < 10) return { background: 'rgba(34,197,94,0.2)', color: '#4ade80' };
+    if (mins < 20) return { background: 'rgba(251,191,36,0.2)', color: '#fbbf24' };
+    return { background: 'rgba(239,68,68,0.2)', color: '#f87171' };
+  };
+
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-slate-900 text-white">
-      <div className="text-center">
-        <div className="text-4xl mb-4">👨‍🍳</div>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'#0f172a',color:'white'}}>
+      <div style={{textAlign:'center'}}>
+        <div style={{fontSize:'48px',marginBottom:'16px'}}>👨‍🍳</div>
         <p>Orders load ho rahe hain...</p>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      <div className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">👨‍🍳</span>
+    <div style={{minHeight:'100vh',background:'#0f172a',color:'white'}}>
+      {/* Header */}
+      <div style={{background:'#1e293b',borderBottom:'1px solid #334155',padding:'16px 24px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:10}}>
+        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
+          <span style={{fontSize:'28px'}}>👨‍🍳</span>
           <div>
-            <h1 className="text-lg font-bold">Kitchen Display</h1>
-            <p className="text-xs text-slate-400">{orders.length} active orders</p>
+            <h1 style={{fontSize:'18px',fontWeight:'bold',margin:0}}>Kitchen Display</h1>
+            <p style={{fontSize:'12px',color:'#94a3b8',margin:0}}>{orders.length} active orders</p>
           </div>
         </div>
-        <p className="text-xl font-mono font-bold text-amber-400">
-          {currentTime.toLocaleTimeString()}
-        </p>
+        <div style={{textAlign:'right'}}>
+          <p style={{fontSize:'24px',fontWeight:'bold',color:'#fbbf24',margin:0,fontFamily:'monospace'}}>
+            {currentTime.toLocaleTimeString()}
+          </p>
+        </div>
       </div>
 
-      <div className="p-6">
+      <div style={{padding:'16px'}}>
         {orders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-96 text-slate-500">
-            <div className="text-6xl mb-4">✅</div>
-            <p className="text-xl font-semibold">Sab orders complete!</p>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'60vh',color:'#475569'}}>
+            <div style={{fontSize:'64px',marginBottom:'16px'}}>✅</div>
+            <p style={{fontSize:'20px',fontWeight:'600'}}>Sab orders complete!</p>
+            <p style={{fontSize:'14px',marginTop:'8px'}}>Koi pending order nahi</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',gap:'16px'}}>
             {orders.map(order => (
-              <div key={order.id} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
-                <div className="px-4 py-3 border-b border-slate-700 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold">Table {order.tables?.table_number}</span>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      order.status === 'received' ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-400'
-                    }`}>
-                      {order.status === 'received' ? '🔵 Received' : '🟡 Preparing'}
+              <div key={order.id} style={{background:'#1e293b',borderRadius:'16px',border:'1px solid #334155',overflow:'hidden'}}>
+                {/* Card Header */}
+                <div style={{padding:'12px 16px',borderBottom:'1px solid #334155',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                    <span style={{fontSize:'18px',fontWeight:'bold'}}>Table {order.tables?.table_number}</span>
+                    <span style={{
+                      fontSize:'11px',padding:'3px 8px',borderRadius:'20px',fontWeight:'600',
+                      background: order.status === 'received' ? 'rgba(59,130,246,0.2)' : 'rgba(251,191,36,0.2)',
+                      color: order.status === 'received' ? '#60a5fa' : '#fbbf24'
+                    }}>
+                      {order.status === 'received' ? '🔵 Naya' : '🟡 Ban Raha Hai'}
                     </span>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-mono font-bold ${getTimerColor(order.created_at)}`}>
+                  <span style={{fontSize:'12px',padding:'4px 8px',borderRadius:'20px',fontWeight:'bold',fontFamily:'monospace',...getTimerStyle(order.created_at)}}>
                     ⏱ {getElapsed(order.created_at)}
                   </span>
                 </div>
 
-                <div className="p-4 space-y-2">
+                {/* Items */}
+                <div style={{padding:'12px 16px',display:'flex',flexDirection:'column',gap:'8px'}}>
                   {order.order_items?.map(item => (
-                    <div key={item.id} className="flex items-center gap-3">
-                      <span className="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div key={item.id} style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                      <span style={{width:'28px',height:'28px',background:'#f97316',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',fontWeight:'bold',flexShrink:0}}>
                         {item.quantity}
                       </span>
-                      <span className="text-sm text-slate-200 flex-1">{item.menu_items?.name}</span>
+                      <span style={{fontSize:'14px',color:'#e2e8f0'}}>{item.menu_items?.name}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="px-4 pb-4">
+                {/* Action Button */}
+                <div style={{padding:'0 16px 16px'}}>
                   {order.status === 'received' && (
-                    <button
-                      onClick={() => updateStatus(order.id, 'preparing')}
-                      className="w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition"
-                    >
-                      🍳 Preparing Shuru
+                    <button onClick={() => updateStatus(order.id, 'preparing')}
+                      style={{width:'100%',background:'#f97316',color:'white',padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:'bold',border:'none',cursor:'pointer'}}>
+                      🍳 Banana Shuru Karo
                     </button>
                   )}
                   {order.status === 'preparing' && (
-                    <button
-                      onClick={() => updateStatus(order.id, 'ready')}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl text-sm font-semibold transition"
-                    >
-                      ✅ Ready Hai!
+                    <button onClick={() => updateStatus(order.id, 'ready')}
+                      style={{width:'100%',background:'#22c55e',color:'white',padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:'bold',border:'none',cursor:'pointer'}}>
+                      ✅ Ready Hai — Serve Karo!
                     </button>
                   )}
                 </div>
