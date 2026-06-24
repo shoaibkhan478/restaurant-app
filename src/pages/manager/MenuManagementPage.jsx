@@ -143,7 +143,7 @@ export default function MenuManagementPage() {
                   {/* Image */}
                   <div className="h-36 bg-amber-50 relative overflow-hidden">
                     {item.image_url ? (
-                      <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                      <img src={item.image_url} alt={item.name} className="w-full h-full object-contain p-2" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-5xl">🍽️</div>
                     )}
@@ -199,7 +199,7 @@ export default function MenuManagementPage() {
                 <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center">
                   {form.image_url ? (
                     <div className="relative">
-                      <img src={form.image_url} alt="preview" className="w-full h-32 object-cover rounded-lg" />
+                      <img src={form.image_url} alt="preview" className="w-full h-32 object-contain p-2 rounded-lg" />
                       <button onClick={() => setForm(f => ({ ...f, image_url: '' }))}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>
                     </div>
@@ -258,3 +258,4 @@ export default function MenuManagementPage() {
     </ManagerLayout>
   );
 }
+
