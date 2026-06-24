@@ -32,84 +32,94 @@ export default function MenuPage() {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-orange-50">
+    <div className="flex items-center justify-center h-screen" style={{background:"#fff8f0"}}>
       <div className="text-center">
-        <div className="text-6xl mb-4 animate-bounce">🍽️</div>
-        <p className="text-slate-500 font-medium">Menu load ho raha hai...</p>
+        <div className="text-6xl mb-3 animate-bounce">🍽️</div>
+        <p className="text-orange-400 font-semibold">Menu load ho raha hai...</p>
       </div>
     </div>
   );
 
   if (orderPlaced) return (
-    <div className="flex items-center justify-center h-screen bg-green-50">
+    <div className="flex items-center justify-center h-screen" style={{background:"#f0fff4"}}>
       <div className="text-center px-8">
         <div className="text-7xl mb-4">✅</div>
-        <h1 className="text-2xl font-bold text-slate-900">Order Place Ho Gaya!</h1>
-        <p className="text-slate-500 mt-2">Kitchen ko mil gaya — thoda intezaar karein</p>
-        <p className="text-sm font-bold text-amber-600 mt-1">Table {tableId}</p>
-        <button onClick={() => setOrderPlaced(false)} className="mt-6 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold shadow-lg">Aur Order Karein</button>
+        <h1 className="text-2xl font-bold text-gray-800">Order Ho Gaya!</h1>
+        <p className="text-gray-500 mt-2">Kitchen ko mil gaya, thoda wait karein</p>
+        <p className="text-sm font-bold text-orange-500 mt-1">Table {tableId}</p>
+        <button onClick={() => setOrderPlaced(false)} className="mt-6 text-white px-8 py-3 rounded-2xl font-bold shadow-lg" style={{background:"#f97316"}}>Aur Order Karein</button>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-32">
-      <div className="bg-white sticky top-0 z-10 shadow-sm">
-        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+    <div style={{background:"#f8f8f8", minHeight:"100vh", paddingBottom:"100px"}}>
+      <div style={{background:"#f97316", padding:"16px 16px 0 16px"}}>
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="text-xl font-extrabold text-slate-900">🍽️ Restaurant</h1>
-            <p className="text-xs text-amber-600 font-semibold">Table {tableId}</p>
+            <h1 className="text-xl font-extrabold text-white">🍽️ Restaurant</h1>
+            <p className="text-orange-100 text-xs font-medium">Table {tableId}</p>
           </div>
           {getTotalItems() > 0 && (
-            <button onClick={() => setCartOpen(true)} className="relative bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow">
-              🛒 Cart
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">{getTotalItems()}</span>
+            <button onClick={() => setCartOpen(true)} className="relative bg-white text-orange-500 px-4 py-2 rounded-xl text-sm font-bold shadow">
+              🛒 {getTotalItems()} items
             </button>
           )}
         </div>
-        <div className="px-4 pb-2">
+        <div className="mb-3">
           <input type="text" placeholder="🔍 Search karein..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-gray-50" />
+            className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
+            style={{background:"rgba(255,255,255,0.95)"}} />
         </div>
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto">
+        <div className="flex gap-2 overflow-x-auto pb-3" style={{scrollbarWidth:"none"}}>
           <button onClick={() => setActiveCategory(null)}
-            className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap border transition ${!activeCategory ? "bg-amber-500 text-white border-amber-500" : "bg-white text-slate-600 border-slate-200"}`}>
+            className="px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap"
+            style={{background: !activeCategory ? "white" : "rgba(255,255,255,0.25)", color: !activeCategory ? "#f97316" : "white"}}>
             All
           </button>
           {categories.map(cat => (
             <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap border transition ${activeCategory === cat.id ? "bg-amber-500 text-white border-amber-500" : "bg-white text-slate-600 border-slate-200"}`}>
+              className="px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap"
+              style={{background: activeCategory === cat.id ? "white" : "rgba(255,255,255,0.25)", color: activeCategory === cat.id ? "#f97316" : "white"}}>
               {cat.icon} {cat.name}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="px-4 py-3 space-y-3">
-        {filteredItems.length === 0 && <div className="text-center py-16 text-slate-400"><div className="text-4xl mb-2">😕</div><p>Koi item nahi mila</p></div>}
+      <div className="px-3 pt-3 space-y-3">
+        {filteredItems.length === 0 && (
+          <div className="text-center py-16 text-gray-400">
+            <div className="text-4xl mb-2">😕</div>
+            <p>Koi item nahi mila</p>
+          </div>
+        )}
         {filteredItems.map(item => (
-          <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex items-center gap-3 p-3">
-            <div className="w-24 h-24 rounded-xl overflow-hidden bg-amber-50 flex-shrink-0 flex items-center justify-center">
+          <div key={item.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex" style={{minHeight:"100px"}}>
+            <div className="flex-shrink-0" style={{width:"100px", height:"100px", background:"#fff3e0", overflow:"hidden"}}>
               {item.image_url
-                ? <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
-                : <span className="text-4xl">🍽️</span>}
+                ? <img src={item.image_url} alt={item.name} style={{width:"100px", height:"100px", objectFit:"cover", display:"block"}} />
+                : <div className="w-full h-full flex items-center justify-center text-4xl">🍽️</div>
+              }
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm leading-tight">{item.name}</h3>
-                  {item.dietary_tags?.includes("Bestseller") && <span className="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold mt-0.5">⭐ Bestseller</span>}
-                  <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{item.description}</p>
-                  <div className="flex gap-1 mt-1 flex-wrap">
-                    {item.dietary_tags?.filter(t => t !== "Bestseller").map(tag => (
-                      <span key={tag} className="text-xs bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full">{tag}</span>
-                    ))}
-                  </div>
+            <div className="flex-1 p-3 flex flex-col justify-between" style={{minWidth:0}}>
+              <div>
+                <div className="flex items-start justify-between">
+                  <h3 className="font-bold text-gray-900 text-sm">{item.name}</h3>
+                  {item.dietary_tags?.includes("Bestseller") && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full ml-1 flex-shrink-0" style={{background:"#fff3e0", color:"#f97316"}}>⭐ Best</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{item.description}</p>
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {item.dietary_tags?.filter(t => t !== "Bestseller").map(tag => (
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{background:"#f0fdf4", color:"#16a34a"}}>{tag}</span>
+                  ))}
                 </div>
               </div>
               <div className="flex items-center justify-between mt-2">
-                <span className="text-amber-600 font-extrabold text-base">Rs. {item.price}</span>
-                <button onClick={() => addItem(item)} className="bg-amber-500 text-white text-sm px-4 py-1.5 rounded-xl font-bold active:scale-95 transition shadow-sm">+ Add</button>
+                <span className="font-extrabold text-base" style={{color:"#f97316"}}>Rs. {item.price}</span>
+                <button onClick={() => addItem(item)} className="text-white text-sm px-4 py-1.5 rounded-xl font-bold" style={{background:"#f97316"}}>+ Add</button>
               </div>
             </div>
           </div>
@@ -117,9 +127,9 @@ export default function MenuPage() {
       </div>
 
       {getTotalItems() > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 z-20">
-          <button onClick={() => setCartOpen(true)} className="w-full bg-amber-500 text-white py-4 rounded-2xl font-bold flex items-center justify-between px-5 shadow-xl">
-            <span className="bg-white text-amber-600 text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center">{getTotalItems()}</span>
+        <div className="fixed bottom-4 left-3 right-3 z-20">
+          <button onClick={() => setCartOpen(true)} className="w-full text-white py-4 rounded-2xl font-bold flex items-center justify-between px-5 shadow-xl" style={{background:"#f97316"}}>
+            <span className="bg-white text-orange-500 text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center">{getTotalItems()}</span>
             <span>🛒 Cart Dekhen</span>
             <span>Rs. {getTotalPrice()}</span>
           </button>
@@ -129,32 +139,41 @@ export default function MenuPage() {
       {cartOpen && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/60" onClick={() => setCartOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white px-6 pt-6 pb-3 border-b border-slate-100 flex items-center justify-between">
-              <div><h2 className="text-xl font-bold text-slate-900">🛒 Aapka Order</h2><p className="text-xs text-slate-400">Table {tableId}</p></div>
-              <button onClick={() => setCartOpen(false)} className="text-slate-400 text-xl font-bold">✕</button>
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl overflow-y-auto" style={{maxHeight:"85vh"}}>
+            <div className="sticky top-0 bg-white px-5 pt-5 pb-3 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">🛒 Aapka Order</h2>
+                <p className="text-xs text-gray-400">Table {tableId}</p>
+              </div>
+              <button onClick={() => setCartOpen(false)} className="text-gray-400 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">✕</button>
             </div>
-            <div className="px-6 py-3">
+            <div className="px-5 py-3">
               {cartItems.map(item => (
-                <div key={item.id} className="flex items-center gap-3 py-3 border-b border-slate-100">
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                    {item.image_url ? <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" /> : <span className="text-xl">🍽️</span>}
+                <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-100">
+                  <div className="rounded-xl overflow-hidden flex-shrink-0" style={{width:"48px", height:"48px", background:"#fff3e0"}}>
+                    {item.image_url
+                      ? <img src={item.image_url} alt={item.name} style={{width:"48px", height:"48px", objectFit:"cover"}} />
+                      : <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>
+                    }
                   </div>
-                  <div className="flex-1"><p className="text-sm font-bold text-slate-900">{item.name}</p><p className="text-xs text-slate-400">Rs. {item.price} each</p></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
+                    <p className="text-xs text-gray-400">Rs. {item.price} each</p>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 bg-slate-100 rounded-full text-slate-700 font-bold">−</button>
-                    <span className="text-sm font-bold w-5 text-center">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 bg-amber-500 rounded-full text-white font-bold">+</button>
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-7 bg-gray-100 rounded-full text-gray-700 font-bold text-sm">−</button>
+                    <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-7 rounded-full text-white font-bold text-sm" style={{background:"#f97316"}}>+</button>
                   </div>
-                  <span className="text-sm font-bold text-slate-900 w-16 text-right">Rs. {item.price * item.quantity}</span>
+                  <span className="text-sm font-bold text-gray-900 w-16 text-right">Rs. {item.price * item.quantity}</span>
                 </div>
               ))}
-              <div className="py-4 border-t border-slate-200 mt-2 flex justify-between items-center">
-                <span className="font-bold text-slate-900">Total</span>
-                <span className="font-bold text-xl text-amber-600">Rs. {getTotalPrice()}</span>
+              <div className="py-4 flex justify-between items-center border-t border-gray-100 mt-1">
+                <span className="font-bold text-gray-900">Total</span>
+                <span className="font-extrabold text-xl" style={{color:"#f97316"}}>Rs. {getTotalPrice()}</span>
               </div>
-              <p className="text-xs text-slate-400 mb-3">* Cash payment at table</p>
-              <button onClick={handleOrder} disabled={orderLoading} className="w-full bg-amber-500 disabled:bg-amber-300 text-white py-4 rounded-2xl font-bold text-base mb-4 shadow-lg">
+              <p className="text-xs text-gray-400 mb-3">* Cash payment at table</p>
+              <button onClick={handleOrder} disabled={orderLoading} className="w-full text-white py-4 rounded-2xl font-bold text-base mb-4 shadow-lg disabled:opacity-50" style={{background:"#f97316"}}>
                 {orderLoading ? "⏳ Order ja raha hai..." : "✅ Order Place Karein"}
               </button>
             </div>
