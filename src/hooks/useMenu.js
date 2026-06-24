@@ -12,12 +12,12 @@ export function useMenu() {
       
       const { data: cats } = await supabase
         .from('menu_categories')
-        .select('*')
+        .select('*, image_url')
         .order('display_order');
 
       const { data: menuItems } = await supabase
         .from('menu_items')
-        .select('*')
+        .select('*, image_url')
         .eq('is_available', true);
 
       setCategories(cats || []);
@@ -30,3 +30,4 @@ export function useMenu() {
 
   return { categories, items, loading };
 }
+
