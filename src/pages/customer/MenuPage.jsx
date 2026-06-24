@@ -1,8 +1,8 @@
 ﻿import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useMenu } from "../hooks/useMenu";
-import { useCartStore } from "../store/cartStore";
-import { supabase } from "../lib/supabase";
+import { useMenu } from "../../hooks/useMenu";
+import { useCartStore } from "../../store/cartStore";
+import { supabase } from "../../lib/supabase";
 
 export default function MenuPage() {
   const { tableId } = useParams();
@@ -32,94 +32,91 @@ export default function MenuPage() {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen" style={{background:"#fff8f0"}}>
-      <div className="text-center">
-        <div className="text-6xl mb-3 animate-bounce">🍽️</div>
-        <p className="text-orange-400 font-semibold">Menu load ho raha hai...</p>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#fff8f0"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:"60px",marginBottom:"12px"}}>🍽️</div>
+        <p style={{color:"#f97316",fontWeight:"600"}}>Menu load ho raha hai...</p>
       </div>
     </div>
   );
 
   if (orderPlaced) return (
-    <div className="flex items-center justify-center h-screen" style={{background:"#f0fff4"}}>
-      <div className="text-center px-8">
-        <div className="text-7xl mb-4">✅</div>
-        <h1 className="text-2xl font-bold text-gray-800">Order Ho Gaya!</h1>
-        <p className="text-gray-500 mt-2">Kitchen ko mil gaya, thoda wait karein</p>
-        <p className="text-sm font-bold text-orange-500 mt-1">Table {tableId}</p>
-        <button onClick={() => setOrderPlaced(false)} className="mt-6 text-white px-8 py-3 rounded-2xl font-bold shadow-lg" style={{background:"#f97316"}}>Aur Order Karein</button>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#f0fff4"}}>
+      <div style={{textAlign:"center",padding:"0 32px"}}>
+        <div style={{fontSize:"70px",marginBottom:"16px"}}>✅</div>
+        <h1 style={{fontSize:"24px",fontWeight:"bold",color:"#1f2937"}}>Order Ho Gaya!</h1>
+        <p style={{color:"#6b7280",marginTop:"8px"}}>Kitchen ko mil gaya, thoda wait karein</p>
+        <p style={{fontSize:"14px",fontWeight:"bold",color:"#f97316",marginTop:"4px"}}>Table {tableId}</p>
+        <button onClick={() => setOrderPlaced(false)} style={{marginTop:"24px",background:"#f97316",color:"white",padding:"12px 32px",borderRadius:"16px",fontWeight:"bold",border:"none",cursor:"pointer"}}>Aur Order Karein</button>
       </div>
     </div>
   );
 
   return (
-    <div style={{background:"#f8f8f8", minHeight:"100vh", paddingBottom:"100px"}}>
-      <div style={{background:"#f97316", padding:"16px 16px 0 16px"}}>
-        <div className="flex items-center justify-between mb-3">
+    <div style={{background:"#f8f8f8",minHeight:"100vh",paddingBottom:"100px"}}>
+      <div style={{background:"#f97316",padding:"16px 16px 0 16px"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"12px"}}>
           <div>
-            <h1 className="text-xl font-extrabold text-white">🍽️ Restaurant</h1>
-            <p className="text-orange-100 text-xs font-medium">Table {tableId}</p>
+            <h1 style={{fontSize:"20px",fontWeight:"900",color:"white"}}>🍽️ Restaurant</h1>
+            <p style={{fontSize:"12px",color:"rgba(255,255,255,0.8)",fontWeight:"500"}}>Table {tableId}</p>
           </div>
           {getTotalItems() > 0 && (
-            <button onClick={() => setCartOpen(true)} className="relative bg-white text-orange-500 px-4 py-2 rounded-xl text-sm font-bold shadow">
+            <button onClick={() => setCartOpen(true)} style={{background:"white",color:"#f97316",padding:"8px 16px",borderRadius:"12px",fontSize:"14px",fontWeight:"bold",border:"none",cursor:"pointer"}}>
               🛒 {getTotalItems()} items
             </button>
           )}
         </div>
-        <div className="mb-3">
+        <div style={{marginBottom:"12px"}}>
           <input type="text" placeholder="🔍 Search karein..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-            style={{background:"rgba(255,255,255,0.95)"}} />
+            style={{width:"100%",padding:"10px 16px",borderRadius:"12px",border:"none",fontSize:"14px",background:"rgba(255,255,255,0.95)",boxSizing:"border-box"}} />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-3" style={{scrollbarWidth:"none"}}>
+        <div style={{display:"flex",gap:"8px",overflowX:"auto",paddingBottom:"12px",scrollbarWidth:"none"}}>
           <button onClick={() => setActiveCategory(null)}
-            className="px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap"
-            style={{background: !activeCategory ? "white" : "rgba(255,255,255,0.25)", color: !activeCategory ? "#f97316" : "white"}}>
+            style={{padding:"6px 16px",borderRadius:"20px",fontSize:"14px",fontWeight:"bold",whiteSpace:"nowrap",border:"none",cursor:"pointer",background:!activeCategory?"white":"rgba(255,255,255,0.25)",color:!activeCategory?"#f97316":"white"}}>
             All
           </button>
           {categories.map(cat => (
             <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-              className="px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap"
-              style={{background: activeCategory === cat.id ? "white" : "rgba(255,255,255,0.25)", color: activeCategory === cat.id ? "#f97316" : "white"}}>
+              style={{padding:"6px 16px",borderRadius:"20px",fontSize:"14px",fontWeight:"bold",whiteSpace:"nowrap",border:"none",cursor:"pointer",background:activeCategory===cat.id?"white":"rgba(255,255,255,0.25)",color:activeCategory===cat.id?"#f97316":"white"}}>
               {cat.icon} {cat.name}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="px-3 pt-3 space-y-3">
+      <div style={{padding:"12px",display:"flex",flexDirection:"column",gap:"12px"}}>
         {filteredItems.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            <div className="text-4xl mb-2">😕</div>
+          <div style={{textAlign:"center",padding:"64px 0",color:"#9ca3af"}}>
+            <div style={{fontSize:"40px",marginBottom:"8px"}}>😕</div>
             <p>Koi item nahi mila</p>
           </div>
         )}
         {filteredItems.map(item => (
-          <div key={item.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex" style={{minHeight:"100px"}}>
-            <div className="flex-shrink-0" style={{width:"100px", height:"100px", background:"#fff3e0", overflow:"hidden"}}>
+          <div key={item.id} style={{background:"white",borderRadius:"16px",boxShadow:"0 1px 4px rgba(0,0,0,0.08)",overflow:"hidden",display:"flex",minHeight:"100px"}}>
+            <div style={{width:"100px",height:"100px",flexShrink:0,background:"#fff3e0",overflow:"hidden"}}>
               {item.image_url
-                ? <img src={item.image_url} alt={item.name} style={{width:"100px", height:"100px", objectFit:"cover", display:"block"}} />
-                : <div className="w-full h-full flex items-center justify-center text-4xl">🍽️</div>
+                ? <img src={item.image_url} alt={item.name} style={{width:"100px",height:"100px",objectFit:"cover",display:"block"}} />
+                : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"36px"}}>🍽️</div>
               }
             </div>
-            <div className="flex-1 p-3 flex flex-col justify-between" style={{minWidth:0}}>
+            <div style={{flex:1,padding:"12px",display:"flex",flexDirection:"column",justifyContent:"space-between",minWidth:0}}>
               <div>
-                <div className="flex items-start justify-between">
-                  <h3 className="font-bold text-gray-900 text-sm">{item.name}</h3>
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+                  <h3 style={{fontWeight:"bold",color:"#111827",fontSize:"14px",margin:0}}>{item.name}</h3>
                   {item.dietary_tags?.includes("Bestseller") && (
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full ml-1 flex-shrink-0" style={{background:"#fff3e0", color:"#f97316"}}>⭐ Best</span>
+                    <span style={{fontSize:"11px",fontWeight:"bold",padding:"2px 8px",borderRadius:"20px",background:"#fff3e0",color:"#f97316",marginLeft:"4px",flexShrink:0}}>⭐ Best</span>
                   )}
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{item.description}</p>
-                <div className="flex gap-1 mt-1 flex-wrap">
+                <p style={{fontSize:"12px",color:"#9ca3af",marginTop:"4px"}}>{item.description}</p>
+                <div style={{display:"flex",gap:"4px",marginTop:"4px",flexWrap:"wrap"}}>
                   {item.dietary_tags?.filter(t => t !== "Bestseller").map(tag => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{background:"#f0fdf4", color:"#16a34a"}}>{tag}</span>
+                    <span key={tag} style={{fontSize:"11px",padding:"2px 8px",borderRadius:"20px",background:"#f0fdf4",color:"#16a34a"}}>{tag}</span>
                   ))}
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="font-extrabold text-base" style={{color:"#f97316"}}>Rs. {item.price}</span>
-                <button onClick={() => addItem(item)} className="text-white text-sm px-4 py-1.5 rounded-xl font-bold" style={{background:"#f97316"}}>+ Add</button>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"8px"}}>
+                <span style={{fontWeight:"900",fontSize:"16px",color:"#f97316"}}>Rs. {item.price}</span>
+                <button onClick={() => addItem(item)} style={{background:"#f97316",color:"white",fontSize:"14px",padding:"6px 16px",borderRadius:"12px",fontWeight:"bold",border:"none",cursor:"pointer"}}>+ Add</button>
               </div>
             </div>
           </div>
@@ -127,9 +124,9 @@ export default function MenuPage() {
       </div>
 
       {getTotalItems() > 0 && (
-        <div className="fixed bottom-4 left-3 right-3 z-20">
-          <button onClick={() => setCartOpen(true)} className="w-full text-white py-4 rounded-2xl font-bold flex items-center justify-between px-5 shadow-xl" style={{background:"#f97316"}}>
-            <span className="bg-white text-orange-500 text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center">{getTotalItems()}</span>
+        <div style={{position:"fixed",bottom:"16px",left:"12px",right:"12px",zIndex:20}}>
+          <button onClick={() => setCartOpen(true)} style={{width:"100%",background:"#f97316",color:"white",padding:"16px 20px",borderRadius:"16px",fontWeight:"bold",display:"flex",alignItems:"center",justifyContent:"space-between",border:"none",cursor:"pointer"}}>
+            <span style={{background:"white",color:"#f97316",fontSize:"12px",fontWeight:"bold",width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center"}}>{getTotalItems()}</span>
             <span>🛒 Cart Dekhen</span>
             <span>Rs. {getTotalPrice()}</span>
           </button>
@@ -137,43 +134,43 @@ export default function MenuPage() {
       )}
 
       {cartOpen && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setCartOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl overflow-y-auto" style={{maxHeight:"85vh"}}>
-            <div className="sticky top-0 bg-white px-5 pt-5 pb-3 border-b border-gray-100 flex items-center justify-between">
+        <div style={{position:"fixed",inset:0,zIndex:50}}>
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)"}} onClick={() => setCartOpen(false)} />
+          <div style={{position:"absolute",bottom:0,left:0,right:0,background:"white",borderRadius:"24px 24px 0 0",maxHeight:"85vh",overflowY:"auto"}}>
+            <div style={{position:"sticky",top:0,background:"white",padding:"20px 20px 12px",borderBottom:"1px solid #f3f4f6",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">🛒 Aapka Order</h2>
-                <p className="text-xs text-gray-400">Table {tableId}</p>
+                <h2 style={{fontSize:"18px",fontWeight:"bold",color:"#111827",margin:0}}>🛒 Aapka Order</h2>
+                <p style={{fontSize:"12px",color:"#9ca3af",margin:0}}>Table {tableId}</p>
               </div>
-              <button onClick={() => setCartOpen(false)} className="text-gray-400 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">✕</button>
+              <button onClick={() => setCartOpen(false)} style={{background:"#f3f4f6",border:"none",cursor:"pointer",width:"32px",height:"32px",borderRadius:"50%",fontSize:"16px",color:"#6b7280"}}>✕</button>
             </div>
-            <div className="px-5 py-3">
+            <div style={{padding:"0 20px"}}>
               {cartItems.map(item => (
-                <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-100">
-                  <div className="rounded-xl overflow-hidden flex-shrink-0" style={{width:"48px", height:"48px", background:"#fff3e0"}}>
+                <div key={item.id} style={{display:"flex",alignItems:"center",gap:"12px",padding:"12px 0",borderBottom:"1px solid #f3f4f6"}}>
+                  <div style={{width:"48px",height:"48px",borderRadius:"12px",overflow:"hidden",flexShrink:0,background:"#fff3e0"}}>
                     {item.image_url
-                      ? <img src={item.image_url} alt={item.name} style={{width:"48px", height:"48px", objectFit:"cover"}} />
-                      : <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>
+                      ? <img src={item.image_url} alt={item.name} style={{width:"48px",height:"48px",objectFit:"cover"}} />
+                      : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"20px"}}>🍽️</div>
                     }
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
-                    <p className="text-xs text-gray-400">Rs. {item.price} each</p>
+                  <div style={{flex:1,minWidth:0}}>
+                    <p style={{fontSize:"14px",fontWeight:"bold",color:"#111827",margin:0}}>{item.name}</p>
+                    <p style={{fontSize:"12px",color:"#9ca3af",margin:0}}>Rs. {item.price} each</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-7 bg-gray-100 rounded-full text-gray-700 font-bold text-sm">−</button>
-                    <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-7 rounded-full text-white font-bold text-sm" style={{background:"#f97316"}}>+</button>
+                  <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={{width:"28px",height:"28px",background:"#f3f4f6",border:"none",cursor:"pointer",borderRadius:"50%",fontWeight:"bold",fontSize:"14px"}}>−</button>
+                    <span style={{fontSize:"14px",fontWeight:"bold",width:"16px",textAlign:"center"}}>{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{width:"28px",height:"28px",background:"#f97316",border:"none",cursor:"pointer",borderRadius:"50%",color:"white",fontWeight:"bold",fontSize:"14px"}}>+</button>
                   </div>
-                  <span className="text-sm font-bold text-gray-900 w-16 text-right">Rs. {item.price * item.quantity}</span>
+                  <span style={{fontSize:"14px",fontWeight:"bold",color:"#111827",width:"64px",textAlign:"right"}}>Rs. {item.price * item.quantity}</span>
                 </div>
               ))}
-              <div className="py-4 flex justify-between items-center border-t border-gray-100 mt-1">
-                <span className="font-bold text-gray-900">Total</span>
-                <span className="font-extrabold text-xl" style={{color:"#f97316"}}>Rs. {getTotalPrice()}</span>
+              <div style={{padding:"16px 0",display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid #e5e7eb",marginTop:"4px"}}>
+                <span style={{fontWeight:"bold",color:"#111827"}}>Total</span>
+                <span style={{fontWeight:"900",fontSize:"20px",color:"#f97316"}}>Rs. {getTotalPrice()}</span>
               </div>
-              <p className="text-xs text-gray-400 mb-3">* Cash payment at table</p>
-              <button onClick={handleOrder} disabled={orderLoading} className="w-full text-white py-4 rounded-2xl font-bold text-base mb-4 shadow-lg disabled:opacity-50" style={{background:"#f97316"}}>
+              <p style={{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}}>* Cash payment at table</p>
+              <button onClick={handleOrder} disabled={orderLoading} style={{width:"100%",background:orderLoading?"#fdba74":"#f97316",color:"white",padding:"16px",borderRadius:"16px",fontWeight:"bold",fontSize:"16px",marginBottom:"16px",border:"none",cursor:"pointer"}}>
                 {orderLoading ? "⏳ Order ja raha hai..." : "✅ Order Place Karein"}
               </button>
             </div>
@@ -182,5 +179,4 @@ export default function MenuPage() {
       )}
     </div>
   );
-}/ /   u p d a t e  
- 
+}
