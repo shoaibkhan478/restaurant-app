@@ -137,11 +137,11 @@ export default function MenuManagementPage() {
           {filteredItems.length === 0 ? (
             <div className="text-center py-12 text-slate-400">Is category mein koi item nahi — Add Item karo!</div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {filteredItems.map(item => (
                 <div key={item.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                   {/* Image */}
-                  <div className="h-40 bg-amber-50 relative">
+                  <div className="h-36 bg-amber-50 relative overflow-hidden">
                     {item.image_url ? (
                       <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
