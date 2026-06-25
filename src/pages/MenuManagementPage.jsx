@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import ManagerLayout from '../../components/manager/ManagerLayout';
 
@@ -12,25 +12,25 @@ export default function MenuManagementPage() {
   const [form, setForm] = useState({
     name: '', description: '', price: '', category_id: '', dietary_tags: [], is_available: true
   });
-
-  const fetchData = async () => {
+const fetchData = async () => {
     const { data: cats } = await supabase.from('menu_categories').select('*').order('display_order');
     const { data: menuItems } = await supabase.from('menu_items').select('*').order('name');
     setCategories(cats || []);
     setItems(menuItems || []);
-    if (cats?.length && !activeCategory) setActiveCategory(cats[0].id);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, []);
-
-  const filteredItems = items.filter(i => i.category_id === activeCategory);
-
-  const openAdd = () => {
-    setEditItem(null);
-    setForm({ name: '', description: '', price: '', category_id: activeCategory || '', dietary_tags: [], is_available: true });
-    setShowForm(true);
-  };
+  useEffect(() => {
+    const load = async () => {
+      const { data: cats } = await supabase.from('menu_categories').select('*').order('display_order');
+      const { data: menuItems } = await supabase.from('menu_items').select('*').order('name');
+      setCategories(cats || []);
+      setItems(menuItems || []);
+      if (cats?.length) setActiveCategory(cats[0].id);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const openEdit = (item) => {
     setEditItem(item);
@@ -70,7 +70,11 @@ export default function MenuManagementPage() {
     }));
   };
 
-  if (loading) return <ManagerLayout><div className="flex items-center justify-center h-64 text-slate-400">Loading...</div></ManagerLayout>;
+  if (loading) return (
+    <ManagerLayout>
+      <div className="flex items-center justify-center h-64 text-slate-400">Loading...</div>
+    </ManagerLayout>
+  );
 
   return (
     <ManagerLayout>
@@ -84,16 +88,16 @@ export default function MenuManagementPage() {
         </button>
       </div>
 
-      {/* Same side-by-side layout on every screen size — sidebar just gets narrower, never stacks */}
-      <div className="flex gap-2 sm:gap-6">
-        <div className="w-20 sm:w-48 flex-shrink-0">
-          <h3 className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase mb-2 sm:mb-3 truncate">Categories</h3>
-          <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+
+        <div className="w-full sm:w-48 flex-shrink-0">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase mb-2 sm:mb-3">Categories</h3>
+          <div className="flex sm:flex-col gap-1 overflow-x-auto pb-1 sm:pb-0">
             {categories.map(cat => (
               <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-                className={`w-full text-left px-2 sm:px-3 py-2 rounded-lg text-[11px] sm:text-sm font-medium transition ${activeCategory === cat.id ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:bg-slate-50'}`}>
-                <span className="block truncate">{cat.name}</span>
-                <span className="text-[9px] sm:text-xs text-slate-400">{items.filter(i => i.category_id === cat.id).length}</span>
+                className={`flex-shrink-0 text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition ${activeCategory === cat.id ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:bg-slate-50'}`}>
+                <span className="block whitespace-nowrap">{cat.name}</span>
+                <span className="text-[10px] text-slate-400">{items.filter(i => i.category_id === cat.id).length} items</span>
               </button>
             ))}
           </div>
@@ -101,27 +105,29 @@ export default function MenuManagementPage() {
 
         <div className="flex-1 min-w-0">
           <div className="space-y-2">
-            {filteredItems.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Is category mein koi item nahi</div>}
+            {filteredItems.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">Is category mein koi item nahi</div>
+            )}
             {filteredItems.map(item => (
-              <div key={item.id} className="bg-white rounded-xl border border-slate-200 p-2.5 sm:p-4 flex items-center gap-2 sm:gap-4">
-                <div className="w-9 h-9 sm:w-12 sm:h-12 bg-amber-100 rounded-lg flex items-center justify-center text-base sm:text-xl flex-shrink-0">🍴</div>
+              <div key={item.id} className="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg flex items-center justify-center text-lg sm:text-xl flex-shrink-0">🍴</div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                    <h3 className="font-semibold text-slate-900 text-xs sm:text-sm truncate">{item.name}</h3>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>
                     {item.dietary_tags?.map(tag => (
-                      <span key={tag} className="text-[9px] sm:text-xs bg-green-50 text-green-700 px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">{tag}</span>
+                      <span key={tag} className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full whitespace-nowrap">{tag}</span>
                     ))}
                   </div>
-                  <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 truncate">{item.description}</p>
-                  <p className="text-amber-600 font-bold text-xs sm:text-sm mt-1">Rs. {item.price}</p>
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">{item.description}</p>
+                  <p className="text-amber-600 font-bold text-sm mt-1">Rs. {item.price}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 flex-shrink-0">
                   <button onClick={() => toggleAvailable(item)}
-                    className={`text-[9px] sm:text-xs px-2 sm:px-3 py-1 rounded-full font-medium whitespace-nowrap ${item.is_available ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                    className={`text-xs px-2 sm:px-3 py-1 rounded-full font-medium whitespace-nowrap ${item.is_available ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                     {item.is_available ? '✅' : '⛔'}
                   </button>
-                  <button onClick={() => openEdit(item)} className="text-slate-400 hover:text-amber-600 px-1.5 sm:px-2 py-1 rounded hover:bg-amber-50 text-xs sm:text-sm">✏️</button>
-                  <button onClick={() => handleDelete(item.id)} className="text-red-400 hover:text-red-600 px-1.5 sm:px-2 py-1 rounded hover:bg-red-50 text-xs sm:text-sm">🗑️</button>
+                  <button onClick={() => openEdit(item)} className="text-slate-400 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 text-sm">✏️</button>
+                  <button onClick={() => handleDelete(item.id)} className="text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 text-sm">🗑️</button>
                 </div>
               </div>
             ))}
